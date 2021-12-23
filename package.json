@@ -1,0 +1,28 @@
+{
+  "name": "@definetool/sync-files",
+  "version": "1.0.0",
+  "description": "基于 MD5 的文件同步工具，把源目录的文件同步到目标目录中。",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "micty",
+  "email": "mictydeng@qq.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/definetool/sync-files.git"
+  },
+  "dependencies": {
+    "@definejs/array": "^1.1.0",
+    "@definejs/date": "^1.1.0",
+    "@definejs/directory": "^2.0.3",
+    "@definejs/file": "^2.0.1",
+    "@definejs/md5": "^2.0.0",
+    "@definejs/path": "^2.0.1",
+    "@definejs/string": "^1.0.0",
+    "@definejs/timer": "^1.0.1",
+    "@webpart/console": "^2.1.0",
+    "colors": "^1.4.0",
+    "progress": "^2.0.3"
+  }
+}
