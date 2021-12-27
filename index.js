@@ -6,18 +6,13 @@ const ProgressBar = require('./lib/ProgressBar');
 const Task = require('./modules/Task');
 
 function create(config) { 
-    let { defaults, } = exports;
 
-    let dt = $Date.format(defaults.datetime);
+    let dt = $Date.format('yyyy-MM-dd@HH.mm.ss');
     let home = config.home || `./output/${dt}/`
 
     let task = new Task({
         'home': home,
-        'source': config.source,
-        'target': config.target,
-
-        'console': config.console || defaults.console,
-        'cache': config.cache || defaults.cache,
+        ...config,
     });
 
     return task;
@@ -26,12 +21,6 @@ function create(config) {
 module.exports = exports = {
     ProgressBar,
     Task,
-
-    defaults: {
-        datetime: 'yyyy-MM-dd@HH.mm.ss',
-        console: 'console.log',
-        cache: '.sync-files/',
-    },
 
     parse(config) { 
         if (typeof config == 'string') {

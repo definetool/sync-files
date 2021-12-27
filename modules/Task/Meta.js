@@ -2,8 +2,7 @@ const Path = require('@definejs/path');
 
 module.exports = {
     create(config, more) { 
-        let { home, source, target, } = config;
-        let { console, } = more;
+        let { source, target, } = config;
 
         if (source) {
             source = Path.resolve(source);
@@ -17,12 +16,14 @@ module.exports = {
 
        
         let meta = {
-            'home': home,
-            'console': console,
+            'home': config.home,
+            'patterns': config.patterns,
+            'simulate': config.simulate,
+            'console': more.console,
             'timer': more.timer,
             'source': source ? { 'dir': source, 'cache': null, } : null,
             'target': target ? { 'dir': target, 'cache': null, } : null,
-       
+
             'sync': null,   //保存 sync() 的结果。
             'clear': null,  //保存 clear() 的结果。
 
@@ -32,6 +33,7 @@ module.exports = {
                 successRenames: [],
                 failRenames: [],
                 jumpFiles: [],
+                createDirs: [],
                 deleteDirs: [],
                 deleteFiles: [],
             },

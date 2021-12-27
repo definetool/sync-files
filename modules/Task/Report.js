@@ -57,6 +57,7 @@ module.exports = {
             successRenames,
             failRenames,
             jumpFiles,
+            createDirs,
             deleteDirs,
             deleteFiles,
         } = stat;
@@ -64,6 +65,7 @@ module.exports = {
         console.log(`            ├──复制文件数=${colors.cyan(successCopys.length)}`);
         console.log(`            ├──重命名文件数=${colors.cyan(successRenames.length)}`);
         console.log(`            ├──跳过文件数=${colors.cyan(jumpFiles.length)}`);
+        console.log(`            ├──创建目录数=${colors.cyan(createDirs.length)}`);
         console.log(`            ├──删除目录数=${colors.cyan(deleteDirs.length)}`);
         console.log(`            └──删除文件数=${colors.cyan(deleteFiles.length)}`);
 

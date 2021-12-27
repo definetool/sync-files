@@ -23,9 +23,14 @@ class Task {
     *       cache: '',      //解析 source 目录和 target 目录中的文件 MD5 时要保存的元数据信息的目录名，建议指定为 `.sync-files/`。
     *       source: '',     //要同步的源目录。
     *       target: '',     //要同步的目标目录。
+    *       patterns: [],   //要同步的文件列表模式。 如果不指定，或指定为空数组，则表示全部文件。
     *   };
     */
     constructor(config) {
+        config = Object.assign({}, exports.defautls, config);
+
+
+
         let console = Console.create(config);
         let timer = new Timer(console);
 
@@ -54,17 +59,19 @@ class Task {
     */
     parse() {
         let meta = mapper.get(this);
-        let { console, timer, source, target, } = meta;
+        let { console, timer, source, target, patterns, } = meta;
+
+
 
         timer.start();
 
         //返回: { sum, dirs, files, file$md5, md5$main, md5$files, isEmpty, };
         if (source) {
-            source = FileSystem.parse({ console, ...source, });
+            source = FileSystem.parse({ console, ...source, patterns, });
         }
 
         if (target) {
-            target = FileSystem.parse({ console, ...target, });
+            target = FileSystem.parse({ console, ...target, patterns, });
         }
 
 
@@ -111,22 +118,17 @@ class Task {
 
         if (source.sum == target.sum) {
             Report.render(meta);
-            console.log(`source 目录与 target 目录完全一致，无需同步。`.bgGreen);
+            console.log(`source 目录与 target 目录完全一致，无需同步。`.green.bold);
             return;
         }
 
 
-        //先同步目录结构。
-        let dir$name = Target.syncDirs(meta);
-
-        //再同步文件。
-        let { file$md5, stat, } = Target.syncFiles(meta);
+        let dir$name = Target.syncDirs(meta);               //先同步目录结构。
+        let file$md5 = Target.syncFiles(meta);   //再同步文件。
 
         meta.sync = { dir$name, file$md5, };
-        Object.assign(meta.stat, stat);
-
         target.cache.write(file$md5);
-        Home.write(meta, 'sync.json', stat);
+        Home.write(meta, 'stat.json', meta.stat);
     }
 
     /**
@@ -134,20 +136,17 @@ class Task {
     */
     clear() {
         let meta = mapper.get(this);
+        let { sync, target, } = meta;
 
-        if (!meta.sync || meta.target.isEmpty) {
+        if (!sync || target.isEmpty) {
             return;
         }
 
-
-        let { dir$name, file$md5, } = meta.sync;
-
         //第一轮同步后，目标目录已包含了源目录的全部文件和目录。
         //但目标目录可能还存在一些相对于源目录来说是多余的文件和目录。
-        let stat = Target.clear(meta, { dir$name, file$md5, });
+        Target.clear(meta, sync);
 
-        Object.assign(meta.stat, stat);
-        Home.write(meta, 'clear.json', stat);
+        Home.write(meta, 'stat.json', meta.stat);
     }
 
     /**
@@ -161,12 +160,12 @@ class Task {
         }
 
 
-        let { console, source, target, } = meta;
+        let { console, source, target, patterns, } = meta;
 
         if (!target.isEmpty) {
             //为了确保最终结果一致，最后再做一次检验是最安全的，可以避免代码逻辑有漏洞。
             console.log(`校验目标目录 >>`.bold);
-            target = meta.target = FileSystem.parse({ console, ...target });
+            target = meta.target = FileSystem.parse({ console, ...target, patterns, });
         }
         else { //target 目录为空，则是直接使用 source 的信息来显示。
             meta.target = source;
@@ -175,7 +174,7 @@ class Task {
         Report.render(meta);
 
         if (!target.isEmpty && source.sum != target.sum) {
-            console.log(`**************** 同步后的结果不一致 *****************`.bgRed);
+            console.log(`!!!!!!!!!!!!! 同步后的结果不一致 !!!!!!!!!!!!!!!!!!`.bgRed);
             return;
         }
 
@@ -193,4 +192,5 @@ class Task {
 
 }
 
-module.exports = Task;
+module.exports = exports = Task;
+exports.defautls = require('./Task.defaults');

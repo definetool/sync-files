@@ -111,6 +111,7 @@ class Cache {
     write(file$md5) { 
         let meta = mapper.get(this);
         if (!meta.home) {
+            console.log('HHHHHHHHHHHHHHHHHHHHHHHHHHHHH'.red, meta)
             return;
         }
 
