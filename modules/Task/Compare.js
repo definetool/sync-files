@@ -45,7 +45,7 @@ module.exports = {
         let deletes = [];   //需要删除的文件，即需要从 target 中删除的文件。
         let creates = [];   //需要创建的文件，即需要从 source 复制到 target 的文件。
 
-        let file$random = {};   //常规重命名会导致目标文件冲突的，则要先把原目标文件改成一个随机名。
+        let file$random = {};   //常规重命名会导致目标文件冲突的，则要先把原目标文件改成一个随机名。 
         let src$dest = {};      //
         let dest$src = {};      //
         let hash$srcs = {};     //hash 对应的 source 文件列表。 srcs 为一个 Set 实例。
@@ -76,8 +76,8 @@ module.exports = {
 
             //srcs 中不包含同名的 dest。
             //尝试找出 dest 中最适合对应 srcs 中的哪一个。
-            if (!srcs.has(src)) {
-                src = Srcs.find({ srcs, hash, source, target, });;
+            if (!srcs.has(dest)) {
+                src = Srcs.find({ srcs, hash, source, target, });
             }
            
             //删除它，表示已处理。
@@ -117,11 +117,17 @@ module.exports = {
         });
 
 
+        //剔除要删除的部分。
+        //因为某个 dest 可能要被改成随机名，但它又是要被删除的，
+        //所以最终可以不用改成随机名。
+        deletes.forEach((file) => {
+            delete file$random[file];
+        });
+
         //该文件还没映射到 dest，则要加入到复制列表。
         creates = source.files.filter((src) => {
             return !src$dest[src];
         });
-
 
 
 

@@ -87,8 +87,8 @@ class Task {
         let meta = mapper.get(this);
         let { console, source, target, } = meta;
 
-        source = Recource.parse(console, source);
-        target = Recource.parse(console, target);
+        source = Recource.parse(console, source, 'source');
+        target = Recource.parse(console, target, 'target');
 
 
         this.output('parse', { type: 'source', }, source);
@@ -148,7 +148,18 @@ class Task {
         Sync.renameFiles(console, { target, compare, });
         Sync.copyFiles(console, { source, target, compare, });
 
-        Sync.deleteDirs(console, { target, compare, output, }); //这个在最后。 因为 target 目录中可能有些有用文件。
+        //这个在最后。 因为 target 目录中可能有些有用文件。
+        Sync.deleteDirs(console, {
+            target,
+            compare,
+            output,
+            //重新检查一下是否有其它文件。
+            getFiles: function (dir) { 
+                let { cache, patterns, } = meta.target;
+                let files = Recource.getFiles({ dir, cache, patterns, });
+                return files;
+            },
+        }); 
 
 
 

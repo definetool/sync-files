@@ -8,7 +8,7 @@ const Timer = require('../../lib/Timer');
 const Size = require('../../lib/Size');
 
 
-module.exports = exports = {
+module.exports = {
 
     //删除文件。
     deleteFiles(console, { target, compare, output, }) {
@@ -29,10 +29,11 @@ module.exports = exports = {
 
         deletes.forEach((name, index) => {
             let file = `${target.dir}${name}`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '清理文件: ',
-                msg: `${index == maxIndex ? `└──` : `├──`}删除文件: ${name.cyan}`,
+                msg: `${link.gray}删除文件: ${name.cyan}`,
             });
 
             //备份一下。
@@ -62,14 +63,16 @@ module.exports = exports = {
 
         creates.forEach((name, index) => {
             let dest = `${target.dir}${name}`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '同步目录: ',
-                msg: `${index == maxIndex ? `└──` : `├──`}创建目录: ${name.cyan}`,
+                msg: `${link.gray}创建目录: ${name.cyan}`,
             });
 
             //为发现程序逻辑中的错误，理论上是没有才是正常的。
             if (fs.existsSync(dest)) {
+                bar.log('\n', dest.bgRed);
                 throw new Error(`已存在目标目录: ${dest}`);
             }
 
@@ -98,21 +101,22 @@ module.exports = exports = {
         let timer = new Timer(console);
         let bar = new ProgressBar(total, console);
 
-        timer.start(`开始移动冲突文件，共 ${colors.cyan(total)} 个 >>`.bold);
+        timer.start(`开始移动冲突文件 ${target.dir.blue}，共 ${colors.cyan(total)} 个 >>`.bold);
 
         //重命名文件。
         randoms.forEach(({ src, dest, }, index) => {
             let srcFile = `${target.dir}${src}`;
             let destFile = `${target.dir}${dest}`;
-            let link = (index == maxIndex) ? `└──` : `├──`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '移动文件: ',
-                msg: `${link}重命名文件: ${src.cyan} \n        -->  ${dest.green}`,
+                msg: `${link.gray}重命名文件: ${src.cyan} \n        -->  ${dest.green}`,
             });
 
             //为发现程序逻辑中的错误，理论上是没有才是正常的。
             if (fs.existsSync(destFile)) {
+                bar.log('\n', destFile);
                 throw new Error(`已存在目标文件: ${destFile}`);
             }
 
@@ -141,7 +145,7 @@ module.exports = exports = {
         let timer = new Timer(console);
         let bar = new ProgressBar(total, console);
 
-        timer.start(`开始移动文件，共 ${colors.cyan(total)} 个 >>`.bold);
+        timer.start(`开始移动文件 ${target.dir.blue}，共 ${colors.cyan(total)} 个 >>`.bold);
 
 
         //重命名文件。
@@ -151,15 +155,16 @@ module.exports = exports = {
 
             let srcFile = `${target.dir}${src}`;
             let destFile = `${target.dir}${dest}`;
-            let link = (index == maxIndex) ? `└──` : `├──`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '移动文件: ',
-                msg: `${link}重命名文件: ${src.cyan} \n        -->  ${dest.green}`,
+                msg: `${link.gray}重命名文件: ${src.cyan} \n        -->  ${dest.green}`,
             });
 
             //为发现程序逻辑中的错误，理论上是没有才是正常的。
             if (fs.existsSync(destFile)) {
+                bar.log('\n', destFile.bgRed);
                 throw new Error(`已存在目标文件: ${destFile}`);
             }
 
@@ -191,15 +196,16 @@ module.exports = exports = {
             let dest = `${target.dir}${name}`;
             let stat = fs.statSync(src);
             let size = Size.getDesc(stat.size);
-            let link = (index == maxIndex) ? `└──` : `├──`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '复制文件: ',
-                msg: `${link}复制文件: ${name.cyan} | ${size.value.magenta} ${size.desc.grey}`,
+                msg: `${link.gray}复制文件: ${name.cyan} | ${size.value.magenta}${size.desc.grey}`,
             });
 
             //为发现程序逻辑中的错误，理论上是没有才是正常的。
             if (fs.existsSync(dest)) {
+                bar.log('\n', dest.bgRed);
                 throw new Error(`已存在目标文件: ${dest}`);
             }
 
@@ -209,7 +215,7 @@ module.exports = exports = {
     },
 
     //删除目录。
-    deleteDirs(console, { target, compare, output, }) {
+    deleteDirs(console, { target, compare, output, getFiles, }) {
         let { deletes, } = compare.dirs;
         let total = deletes.length;
 
@@ -227,10 +233,11 @@ module.exports = exports = {
 
         deletes.forEach((name, index) => {
             let dir = `${target.dir}${name}`;
+            let link = index == maxIndex ? `└──` : `├──`;
 
             bar.render({
                 text: '清理目录: ',
-                msg: `${index == maxIndex ? `└──` : `├──`}删除目录: ${name.cyan}`,
+                msg: `${link.gray}删除目录: ${name.cyan}`,
             });
 
             //可能在删除它的父目录时连同它自己一起被删除了。
@@ -238,10 +245,11 @@ module.exports = exports = {
 
                 //为发现程序逻辑中的错误，理论上是没有才是正常的。
                 //为了检查上一步的清理文件是否已删除干净。
-                let files = Directory.getFiles(dir);
+                let files = getFiles(dir);
 
                 if (files.length > 0) {
                     console.log(files);
+                    bar.log('\n', dir.bgRed);
                     throw new Error(`无法删除目标目录 ${dir}，因为存在文件。`);
                 }
 
