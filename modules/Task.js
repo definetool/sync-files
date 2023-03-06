@@ -1,13 +1,16 @@
 
-const FileSystem = require('../lib/FileSystem');
+require('colors');
+
+const File = require('@definejs/file');
+const $String = require('@definejs/string');
+
+const Recource = require('../lib/Recource');
 const Timer = require('../lib/Timer');
 
-const Console = require('./Task/Console');
-const Cache = require('./Task/Cache');
-const Home = require('./Task/Home');
-const Report = require('./Task/Report');
-const Target = require('./Task/Target');
 const Meta = require('./Task/Meta');
+const Compare = require('./Task/Compare');
+const Sync = require('./Task/Sync');
+const Report = require('./Task/Report');
 
 
 
@@ -27,30 +30,53 @@ class Task {
     *   };
     */
     constructor(config) {
-        config = Object.assign({}, exports.defautls, config);
-
-
-
-        let console = Console.create(config);
-        let timer = new Timer(console);
-
-        let meta = Meta.create(config, {
-            console,
-            timer,
-        });
-
-        let { source, target, } = meta;
-
-        if (source) {
-            source.cache = new Cache(source.dir, config.cache);
-        }
-
-        if (target) {
-            target.cache = new Cache(target.dir, config.cache);
-        }
+        let meta = Meta.create(config, exports.defaults);
 
 
         mapper.set(this, meta);
+
+        this.console = console;
+        this.meta = meta;
+
+    }
+
+
+    /**
+    * 输出文件到临时目录。
+    * 已重载 output(sample, data, json);
+    * 已重载 output(file, json);
+    * @param {*} file 
+    * @param {*} json 
+    */
+    output(sample, data, json) {
+        let meta = mapper.get(this);
+        let { output, } = meta;
+
+        if (!output.dir) {
+            return;
+        }
+
+    
+        let file = '';
+
+        //重载 output(file, json);
+        if (arguments.length == 2) {
+            file = sample;
+            json = data;
+        }
+        else {
+            //如取 output.parse 中的模板。
+            sample = output[sample] || '';
+            file = $String.format(sample, data);
+        }
+     
+
+        if (!file) {
+            return;
+        }
+
+        File.writeJSON(`${output.dir}${file}`, json);
+
     }
 
     /**
@@ -59,138 +85,97 @@ class Task {
     */
     parse() {
         let meta = mapper.get(this);
-        let { console, timer, source, target, patterns, } = meta;
+        let { console, source, target, } = meta;
+
+        source = Recource.parse(console, source);
+        target = Recource.parse(console, target);
 
 
+        this.output('parse', { type: 'source', }, source);
+        this.output('parse', { type: 'target', }, target);
 
-        timer.start();
+        return { source, target, };
+    }
 
-        //返回: { sum, dirs, files, file$md5, md5$main, md5$files, isEmpty, };
-        if (source) {
-            source = FileSystem.parse({ console, ...source, patterns, });
-        }
+    /**
+    * 
+    * @param {*} source 
+    * @param {*} target 
+    * @returns 
+    */
+    compare({ source, target, }) {
+        let meta = mapper.get(this);
+        let { console, } = meta;
+        let timer = new Timer(console);
 
-        if (target) {
-            target = FileSystem.parse({ console, ...target, patterns, });
-        }
+        timer.start(`开始分析差异 >>`.bold);
 
+        let dirs = Compare.parseDirs({ source, target, });
+        let files = Compare.parseFiles({ source, target, });
 
-        Object.assign(meta.source, source);
-        Object.assign(meta.target, target);
+        this.output('compare', { type: 'dirs', }, dirs);
+        this.output('compare', { type: 'files', }, files);
 
-        Home.write(meta, 'source.json', source);
-        Home.write(meta, 'target.json', target);
+        timer.stop(`<< 结束分析差异，耗时{text}。`.bold);
 
+        return { dirs, files, };
     }
 
     /**
     * 同步。
     */
-    sync() {
+    sync({ source, target, compare, }) {
         let meta = mapper.get(this);
-        let { source, target, console, } = meta;
-
-
-        if (!source) {
-            console.log(`source 目录不能为空。`.bgRed);
-            return;
-        }
-
-        if (!target) {
-            console.log(`target 目录不能为空。`.bgRed);
-            return;
-        }
+        let { console, output, } = meta;
 
         if (source.dir == target.dir) {
             console.log(`source 目录不能与 target 目录相同。`.bgRed);
             return;
         }
 
-        if (!source.sum) {
-            console.log(`source 目录尚未进行解析。`.bgRed);
+        if (source.sum == target.sum) {
+            Report.render(console, { source, target, });
+            console.log(`source 目录与 target 目录完全一致，无需同步。`.bgGreen.bold);
             return;
         }
 
-        if (!target.sum) {
-            console.log(`target 目录尚未进行解析。`.bgRed);
-            return;
-        }
+
+
+        Sync.deleteFiles(console, { target, compare, output, }); //要先清理文件。
+        Sync.createDirs(console, { target, compare, });
+
+        Sync.randomFiles(console, { target, compare, });
+        Sync.renameFiles(console, { target, compare, });
+        Sync.copyFiles(console, { source, target, compare, });
+
+        Sync.deleteDirs(console, { target, compare, output, }); //这个在最后。 因为 target 目录中可能有些有用文件。
+
+
+
+        //校验同步后的结果。
+        target = Recource.parse(console, meta.target);
+        this.output('sync', { type: 'target', }, target);
+
 
         if (source.sum == target.sum) {
-            Report.render(meta);
-            console.log(`source 目录与 target 目录完全一致，无需同步。`.green.bold);
-            return;
-        }
-
-
-        let dir$name = Target.syncDirs(meta);               //先同步目录结构。
-        let file$md5 = Target.syncFiles(meta);   //再同步文件。
-
-        meta.sync = { dir$name, file$md5, };
-        target.cache.write(file$md5);
-        Home.write(meta, 'stat.json', meta.stat);
-    }
-
-    /**
-    * 清理。
-    */
-    clear() {
-        let meta = mapper.get(this);
-        let { sync, target, } = meta;
-
-        if (!sync || target.isEmpty) {
-            return;
-        }
-
-        //第一轮同步后，目标目录已包含了源目录的全部文件和目录。
-        //但目标目录可能还存在一些相对于源目录来说是多余的文件和目录。
-        Target.clear(meta, sync);
-
-        Home.write(meta, 'stat.json', meta.stat);
-    }
-
-    /**
-    * 校验。
-    */
-    verify() {
-        let meta = mapper.get(this);
-
-        if (!meta.sync) {
-            return;
-        }
-
-
-        let { console, source, target, patterns, } = meta;
-
-        if (!target.isEmpty) {
-            //为了确保最终结果一致，最后再做一次检验是最安全的，可以避免代码逻辑有漏洞。
-            console.log(`校验目标目录 >>`.bold);
-            target = meta.target = FileSystem.parse({ console, ...target, patterns, });
-        }
-        else { //target 目录为空，则是直接使用 source 的信息来显示。
-            meta.target = source;
-        }
-
-        Report.render(meta);
-
-        if (!target.isEmpty && source.sum != target.sum) {
-            console.log(`!!!!!!!!!!!!! 同步后的结果不一致 !!!!!!!!!!!!!!!!!!`.bgRed);
-            return;
-        }
-
-
-        let hasError = Report.stat(meta);
-
-        if (hasError) {
-            console.log(`同步完成，但存在失败。`.red);
-        }
-        else {
+            Report.render(console, { source, target, compare, });
             console.log(`======================== 同步成功 ========================`.bgGreen);
         }
+        else {
+            Report.render(console, { source, target, });
+            console.log(`!!!!!!!!!!!!! 同步后的结果不一致 !!!!!!!!!!!!!!!!!!`.bgRed);
+        }
+
+        return target;
 
     }
+
+
+
+
+
 
 }
 
 module.exports = exports = Task;
-exports.defautls = require('./Task.defaults');
+exports.defaults = require('./Task.defaults');

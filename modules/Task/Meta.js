@@ -1,43 +1,37 @@
-const Path = require('@definejs/path');
+
+
+const Console = require('./Meta/Console');
+const Output = require('./Meta/Output');
+const Resource = require('./Meta/Resource');
 
 module.exports = {
-    create(config, more) { 
-        let { source, target, } = config;
+    create(config, defaults) { 
+        let { output, source, target, cache, patterns, } = config;
+        let common = {};
 
-        if (source) {
-            source = Path.resolve(source);
-            source = Path.normalizeDir(source);
+        if (cache) {
+            common.cache = cache;
         }
 
-        if (target) {
-            target = Path.resolve(target);
-            target = Path.normalizeDir(target);
+        if (patterns) {
+            common.patterns = patterns;
         }
+     
 
-       
+
+        output = Output.normalize(output, defaults.output);
+        source = Resource.normalize(source, defaults.source, common);
+        target = Resource.normalize(target, defaults.target, common);
+
+        let console = Console.create(output);
+
         let meta = {
-            'home': config.home,
-            'patterns': config.patterns,
-            'simulate': config.simulate,
-            'console': more.console,
-            'timer': more.timer,
-            'source': source ? { 'dir': source, 'cache': null, } : null,
-            'target': target ? { 'dir': target, 'cache': null, } : null,
-
-            'sync': null,   //保存 sync() 的结果。
-            'clear': null,  //保存 clear() 的结果。
-
-            'stat': {
-                successCopys: [],
-                failCopys: [],
-                successRenames: [],
-                failRenames: [],
-                jumpFiles: [],
-                createDirs: [],
-                deleteDirs: [],
-                deleteFiles: [],
-            },
-         
+            output,
+            source,
+            target,
+            console,
+            
+            timer: null,
         };
 
         return meta;

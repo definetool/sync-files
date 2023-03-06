@@ -29,6 +29,7 @@ const { parse, sync, } = require('@definetool/sync-files');
 //仅对指定目录进行解析，生成 MD5 元数据库。
 parse('/Users/micty/Pictures/Canon');
 
+
 //进行完整的同步流程，包括解析、同步、清理、校验。
 sync({
     //要进行同步的来源目录。
@@ -47,34 +48,10 @@ sync({
 
 #### 自定义方式
 ``` js
-const { ProgressBar, Task, } = require('@definetool/sync-files');
+const { Task, } = require('@definetool/sync-files');
 
-//设置进度条的样式。
-Object.assign(ProgressBar.defaults, {
-    //进度条的长度。
-    width: 100, 
 
-    //已完成的部分的背景色。
-    complete: ' '.bgCyan,
-
-    //标题颜色。
-    titleColor: {
-        backgroud: 'bgCyan',    //背景色
-        text: 'black',          //文本色。
-    },
-});
-
-let task = new Task({
-    //会话过程中产生的日志等临时文件的存放目录。 
-    //建议每次都使用一个不同的目录，以方便多次运行后进行查找和对比。
-    //如果不指定，则不输出临时文件。
-    home: `./output/2021-12-21/`,   
-
-    //会话过程中产生的日志的文件名称。 
-    //如果指定，则输出到此文件中；否则仅在控制台输出。
-    //此文件名是在 home 目录中。
-    console: 'console.log',
-
+let config = {
     //解析过程中提取文件 MD5 等元数据后要保存到目录名，建议指定为 `.sync-files/`。
     //如果不指定，则不保存元数据。
     //为了使用下次的解析更快，建议开启缓存。
@@ -102,15 +79,41 @@ let task = new Task({
         '!**/Thumbs.db',    //排除 `Thumbs.db` 文件。
     ],
 
-    //是否模拟同步。 如果指定为 true，则不会真实复制、删除、创建文件/目录。 
-    //可以使用模拟同步来查看输出的日志、统计信息，提前分析结果。
-    simulate: false,    
-});
 
-task.parse();
-task.sync();
-task.clear();
-task.verify();
+    output: {
+        //会话过程中产生的日志等临时文件的存放目录。 
+        //建议每次都使用一个不同的目录，以方便多次运行后进行查找和对比。
+        //如果不指定，则不输出临时文件。
+        dir: `./output/2021-12-21/`,  
+
+        //会话过程中产生的日志的文件名称。 
+        //如果指定，则输出到此文件中；否则仅在控制台输出。
+        //此文件名是在 home 目录中。
+        console: 'console.log',
+
+        //同步文件与目录过程，target 目录中要被删除的文件与目录在删除前，
+        //可以先复制到此目录作为备份，以避免误删。
+        deletes: 'deletes/',
+
+        //调用 task.parse() 方法时要输出的结果路径。
+        parse: `parse.{type}.json`,
+
+        //调用 task.compare() 方法时要输出的结果路径。
+        compare: `compare.{type}.json`,
+
+        //调用 task.sync() 方法时要输出的结果路径。
+        syn: `syn.{type}.json`,
+
+    },
+  
+};
+
+let task = new Task(config);
+let { source, target, } = task.parse();
+let compare = task.compare({ source, target, });
+let sync = task.sync({ source, target, compare, });
+
+// return { source, target, compare, sync, };
 
 ```
 

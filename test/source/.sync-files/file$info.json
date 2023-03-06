@@ -1,0 +1,20 @@
+{
+    "A1.txt": {"size":1,"ctimeMs":1677829200120,"mtimeMs":1677829178792,"birthtimeMs":1677829168354,"hash":"7fc56270e7a70fa81a5935b72eacbe29"}, 
+    "A2.txt": {"size":1,"ctimeMs":1677829195671,"mtimeMs":1677829178792,"birthtimeMs":1677829168354,"hash":"7fc56270e7a70fa81a5935b72eacbe29"}, 
+    "A3.txt": {"size":1,"ctimeMs":1677829227026,"mtimeMs":1677829178792,"birthtimeMs":1677829168354,"hash":"7fc56270e7a70fa81a5935b72eacbe29"}, 
+    "B.txt": {"size":2,"ctimeMs":1677829268123,"mtimeMs":1677829254129,"birthtimeMs":1677829242282,"hash":"9d3d9048db16a7eee539e93e3618cbe7"}, 
+    "C4.txt": {"size":3,"ctimeMs":1677829327562,"mtimeMs":1677829301728,"birthtimeMs":1677829293670,"hash":"defb99e69a9f1f6e06f15006b1f166ae"}, 
+    "C5.txt": {"size":3,"ctimeMs":1677829333619,"mtimeMs":1677829301728,"birthtimeMs":1677829293670,"hash":"defb99e69a9f1f6e06f15006b1f166ae"}, 
+    "E1.txt": {"size":5,"ctimeMs":1677829401759,"mtimeMs":1677829401759,"birthtimeMs":1677829391628,"hash":"e085448ed5004f1ba9ea48d9e4301aae"}, 
+    "E2.txt": {"size":5,"ctimeMs":1677829409374,"mtimeMs":1677829401759,"birthtimeMs":1677829391628,"hash":"e085448ed5004f1ba9ea48d9e4301aae"}, 
+    "F.txt": {"size":5,"ctimeMs":1677829441622,"mtimeMs":1677829432883,"birthtimeMs":1677829420669,"hash":"5a554d4b4cc04dfed2311cfe2aa544b2"}, 
+    "F1.txt": {"size":5,"ctimeMs":1677829450154,"mtimeMs":1677829432883,"birthtimeMs":1677829420669,"hash":"5a554d4b4cc04dfed2311cfe2aa544b2"}, 
+    "F2.txt": {"size":5,"ctimeMs":1677829456059,"mtimeMs":1677829432883,"birthtimeMs":1677829420669,"hash":"5a554d4b4cc04dfed2311cfe2aa544b2"}, 
+    "G.txt": {"size":6,"ctimeMs":1677829514608,"mtimeMs":1677829488679,"birthtimeMs":1677829480469,"hash":"f216144a92aa74c07e1e7f0ab792477d"}, 
+    "H.txt": {"size":7,"ctimeMs":1677829587250,"mtimeMs":1677829581060,"birthtimeMs":1677829572396,"hash":"600fa948270eb315b846c824161467ca"}, 
+    "H3.txt": {"size":7,"ctimeMs":1677829595836,"mtimeMs":1677829581060,"birthtimeMs":1677829572396,"hash":"600fa948270eb315b846c824161467ca"}, 
+    "L.txt": {"size":8,"ctimeMs":1677829652266,"mtimeMs":1677829649760,"birthtimeMs":1677829641634,"hash":"3786e3b1c5ed4efbbc6854f8ad035ee8"}, 
+    "M.txt": {"size":14,"ctimeMs":1677829696706,"mtimeMs":1677829696706,"birthtimeMs":1677829666095,"hash":"a36b4123888bdd5c45afc7982454fc23"}, 
+    "P1.txt": {"size":2,"ctimeMs":1677829771830,"mtimeMs":1677829724415,"birthtimeMs":1677829716007,"hash":"5f2b9323c39ee3c861a7b382d205c3d3"}, 
+    "P2.txt": {"size":5,"ctimeMs":1677829775993,"mtimeMs":1677829748249,"birthtimeMs":1677829716007,"hash":"5bee317cfbc42f73ea19b0082b7149f6"}
+}

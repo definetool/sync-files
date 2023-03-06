@@ -1,7 +1,40 @@
 
 module.exports = {
-    console: 'console.log',
-    cache: '.sync-files/',
-    simulate: false,    //是否模仿。 如果是，则不会发生真正的写入、删除等操作。
-    patterns: [],       //未指定或为空数组，则匹配全部文件。
+
+    output: {
+        dir: ``,
+        console: `console.log`,
+        deletes: 'deletes/',
+        parse: `parse.{type}.json`,
+        compare: `compare.{type}.json`,
+        syn: `syn.{type}.json`,
+    },
+
+    source: {
+        dir: '',
+        cache: '.sync-files/',
+
+        patterns: [
+            // '**/*.*',     //匹配 `文件名.后缀名`，但不匹配 `.后缀名` 和 `文件名`。
+            '**/*',          //匹配 `文件名.后缀名`、`文件名`、`文件名.`，但不匹配 `.后缀名`。 即匹配所有含有文件名的文件。
+            '**/.*',         //匹配 `.后缀名`，即匹配只含有后缀名的文件。
+            '!**/.DS_Store',
+            '!**/Thumbs.db',
+        ],
+       
+    },
+
+    target: {
+        dir: '',
+        cache: '.sync-files/',
+
+        patterns: [
+            // '**/*.*',     //匹配 `文件名.后缀名`，但不匹配 `.后缀名` 和 `文件名`。
+            '**/*',          //匹配 `文件名.后缀名`、`文件名`、`文件名.`，但不匹配 `.后缀名`。 即匹配所有含有文件名的文件。
+            '**/.*',         //匹配 `.后缀名`，即匹配只含有后缀名的文件。
+            '!**/.DS_Store',
+            '!**/Thumbs.db',
+        ],
+
+    },
 };

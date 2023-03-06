@@ -1,6 +1,6 @@
 {
   "name": "@definetool/sync-files",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "基于 MD5 的文件同步工具，把源目录的文件同步到目标目录中。",
   "main": "index.js",
   "scripts": {},
@@ -15,7 +15,7 @@
   "dependencies": {
     "@definejs/array": "^1.1.0",
     "@definejs/date": "^1.1.0",
-    "@definejs/directory": "^2.0.3",
+    "@definejs/directory": "^2.0.4",
     "@definejs/file": "^2.0.1",
     "@definejs/md5": "^2.0.0",
     "@definejs/path": "^2.0.1",

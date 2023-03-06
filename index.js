@@ -2,43 +2,50 @@
 require('colors');
 
 const $Date = require('@definejs/date');
-const ProgressBar = require('./lib/ProgressBar');
+const File = require('@definejs/file');
+
+const Resource = require('./lib/Recource');
+const Console = require('./lib/Console');
 const Task = require('./modules/Task');
 
-function create(config) { 
 
-    let dt = $Date.format('yyyy-MM-dd@HH.mm.ss');
-    let home = config.home || `./output/${dt}/`
-
-    let task = new Task({
-        'home': home,
-        ...config,
-    });
-
-    return task;
-}
 
 module.exports = exports = {
-    ProgressBar,
     Task,
 
-    parse(config) { 
+    parse(config) {
         if (typeof config == 'string') {
-            config = { 'target': config, };
+            config = { 'dir': config, };
         }
 
-        let task = create(config);
+        config = Object.assign({}, Task.defaults.source, config);
 
-        task.parse();
+        let { dir, cache, patterns, } = config;
+        let output = `./output/${$Date.format('yyyy-MM-dd@HH.mm.ss') }/`;
+
+        let console = Console.create(`${output}console.log`);
+        let resource = Resource.parse(console, { dir, cache, patterns, });
+
+        File.writeJSON(`${output}parse.resource.json`, resource);
+
+        return resource;
     },
 
-    sync(config) { 
-        let task = create(config);
+    sync(config) {
+        let { output, } = config;
 
-        task.parse();
-        task.sync();
-        task.clear();
-        task.verify();
+        if (!output) {
+            output = `./output/${$Date.format('yyyy-MM-dd@HH.mm.ss')}/`;
+        }
+
+        config = { ...config, output, };
+
+        let task = new Task(config);
+        let { source, target, } = task.parse();
+        let compare = task.compare({ source, target, });
+        let sync = task.sync({ source, target, compare, });
+
+        return { source, target, compare, sync, };
     },
 
 
