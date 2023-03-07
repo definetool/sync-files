@@ -11,6 +11,7 @@ const Task = require('./modules/Task');
 
 
 module.exports = exports = {
+    
     Task,
 
     parse(config) {

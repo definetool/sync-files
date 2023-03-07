@@ -102,7 +102,7 @@ let config = {
         compare: `compare.{type}.json`,
 
         //调用 task.sync() 方法时要输出的结果路径。
-        syn: `syn.{type}.json`,
+        sync: `sync.{type}.json`,
 
     },
   

@@ -22,25 +22,25 @@ module.exports = {
         dir = Path.resolve(dir);
         dir = Path.normalizeDir(dir);
 
-        // if (deletes) {
-        //     deletes = Path.normalizeDir(`${dir}${deletes}`);
-        // }
+        if (deletes) {
+            deletes = Path.normalizeDir(deletes);
+        }
 
-        // if (console) {
-        //     console = Path.normalize(`${dir}${console}`);
-        // }
+        if (console) {
+            console = Path.normalize(console);
+        }
 
-        // if (parse) {
-        //     parse = Path.normalize(`${dir}${parse}`);
-        // }
+        if (parse) {
+            parse = Path.normalize(parse);
+        }
 
-        // if (compare) {
-        //     compare = Path.normalize(`${dir}${compare}`);
-        // }
+        if (compare) {
+            compare = Path.normalize(compare);
+        }
 
-        // if (sync) {
-        //     sync = Path.normalize(`${dir}${sync}`);
-        // }
+        if (sync) {
+            sync = Path.normalize(sync);
+        }
 
 
         return { dir, deletes, console, parse, compare, sync, };
