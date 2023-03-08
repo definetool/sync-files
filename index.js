@@ -2,10 +2,6 @@
 require('colors');
 
 const $Date = require('@definejs/date');
-const File = require('@definejs/file');
-
-const Resource = require('./lib/Recource');
-const Console = require('./lib/Console');
 const Timer = require('./lib/Timer');
 const Task = require('./modules/Task');
 
@@ -25,31 +21,24 @@ module.exports = exports = {
 
     parse(config) {
         if (typeof config == 'string') {
-            config = { 'dir': config, };
+            config = { 'source': config, };
         }
 
-
-        config = Object.assign({}, Task.defaults.source, config);
-
         let output = getOutput(config);
-        let { dir, cache, patterns, } = config;
-        let console = Console.create(`${output}console.log`);
-        let timer = new Timer(console);
+        let task = new Task({ ...config, output, });
+        let timer = new Timer(task.console);
 
         timer.start(`开始任务 >>`.bold);
 
-        let resource = Resource.parse(console, { dir, cache, patterns, });
-
-        File.writeJSON(`${output}parse.resource.json`, resource);
+        let { source, } = task.parse();
 
         timer.stop(`<< 结束任务，耗时: {text}。`.bold);
 
 
-        return resource;
+        return source;
     },
 
     sync(config) {
-
         let output = getOutput(config);
         let task = new Task({ ...config, output, });
         let timer = new Timer(task.console);

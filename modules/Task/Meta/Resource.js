@@ -11,6 +11,10 @@ module.exports = {
    
         config = Object.assign({}, defaults, common, config);
 
+        if (!config.dir) {
+            return null;
+        }
+
         config.dir = Path.resolve(config.dir);
         config.dir = Path.normalizeDir(config.dir);
         config.cache = Path.normalizeDir(config.cache);

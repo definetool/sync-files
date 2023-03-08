@@ -87,12 +87,15 @@ class Task {
         let meta = mapper.get(this);
         let { console, source, target, } = meta;
 
-        source = Recource.parse(console, source, 'source');
-        target = Recource.parse(console, target, 'target');
+        if (source) {
+            source = Recource.parse(console, source, 'source');
+            this.output('parse', { type: 'source', }, source);
+        }
 
-
-        this.output('parse', { type: 'source', }, source);
-        this.output('parse', { type: 'target', }, target);
+        if (target) {
+            target = Recource.parse(console, target, 'target');
+            this.output('parse', { type: 'target', }, target);
+        }
 
         return { source, target, };
     }
