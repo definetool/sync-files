@@ -21,11 +21,18 @@ module.exports = exports = {
 
     parse(config) {
         if (typeof config == 'string') {
-            config = { 'source': config, };
+            config = { 'dir': config, };
         }
 
+        let { dir, patterns, cache, } = config;
         let output = getOutput(config);
-        let task = new Task({ ...config, output, });
+
+        let task = new Task({
+            output,
+            source: { dir, patterns, cache, },
+            target: { dir: '', },
+        });
+
         let timer = new Timer(task.console);
 
         timer.start(`开始任务 >>`.bold);
