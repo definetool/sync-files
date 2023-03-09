@@ -23,14 +23,17 @@ module.exports = exports = {
         if (typeof config == 'string') {
             config = { 'dir': config, };
         }
+      
 
-        let { dir, patterns, cache, } = config;
         let output = getOutput(config);
+        let srcConfig = { ...config, };
+
+        delete srcConfig.output;
 
         let task = new Task({
             output,
-            source: { dir, patterns, cache, },
-            target: { dir: '', },
+            source: srcConfig,      //启用 source
+            target: { dir: '', },   //禁用 target
         });
 
         let timer = new Timer(task.console);

@@ -21,4 +21,4 @@ const { parse, sync, } = require('./index');
 //     target: '/Users/micty/Pictures/Canon/test/2008-target',
 // });
 
-parse('/Users/micty/Pictures/Canon/2008/');
+parse('/Users/micty/Pictures/Canon/2008');
