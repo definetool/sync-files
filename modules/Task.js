@@ -38,6 +38,8 @@ class Task {
         this.console = console;
         this.meta = meta;
 
+        this.output('meta', { }, meta);
+
     }
 
 
@@ -167,7 +169,7 @@ class Task {
 
 
         //校验同步后的结果。
-        target = Recource.parse(console, meta.target);
+        target = Recource.parse(console, meta.target, '验证');
         this.output('sync', { type: 'target', }, target);
 
 

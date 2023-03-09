@@ -11,7 +11,7 @@ module.exports = {
         config = Object.assign({}, defaults, config);
 
 
-        let { dir, deletes, console, parse, compare, sync, } = config;
+        let { dir, deletes, console, meta, parse, compare, sync, } = config;
 
         //为了方便调用者的处理，这里返回一个空对象而不是 null。
         if (!dir) {
@@ -21,6 +21,10 @@ module.exports = {
 
         dir = Path.resolve(dir);
         dir = Path.normalizeDir(dir);
+
+        if (meta) {
+            meta = Path.normalize(meta);
+        }
 
         if (deletes) {
             deletes = Path.normalizeDir(deletes);
@@ -43,7 +47,7 @@ module.exports = {
         }
 
 
-        return { dir, deletes, console, parse, compare, sync, };
+        return { dir, deletes, console, meta, parse, compare, sync, };
 
 
 

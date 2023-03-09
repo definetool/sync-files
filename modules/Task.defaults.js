@@ -4,6 +4,7 @@ module.exports = {
     output: {
         dir: ``,
         console: `console.log`,
+        meta: `meta.json`,
         deletes: 'deletes/',
         parse: `parse.{type}.json`,
         compare: `compare.{type}.json`,
