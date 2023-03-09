@@ -60,7 +60,7 @@ module.exports = {
         let maxIndex = total - 1;
         let timer = new Timer(console);
         let bar = new ProgressBar(total, console);
-        let bakDir = output.dir && output.deletes ? `${output.dir}${output.deletes}dirs/` : '';
+        let bakDir = output.dir && output.deletes ? `${output.dir}/${output.deletes}/dirs/` : '';
 
 
         timer.start(`开始清理目录 ${target.dir.blue}，共 ${colors.cyan(total)} 个 >>`.bold);
@@ -68,10 +68,11 @@ module.exports = {
         deletes.forEach((name, index) => {
             let dir = `${target.dir}${name}`;
             let link = index == maxIndex ? `└──` : `├──`;
+            let act = bakDir ? '备份&删除' : '直接删除';
 
             bar.render({
                 text: '清理目录: ',
-                msg: `${link.gray}删除目录: ${name.cyan}`,
+                msg: `${link.gray}${act}目录: ${name.cyan}`,
             });
 
             //可能在删除它的父目录时连同它自己一起被删除了。
@@ -89,7 +90,6 @@ module.exports = {
 
                 Directory.copy(dir, `${bakDir}${name}`);
             }
-
 
             Directory.delete(dir);
         });

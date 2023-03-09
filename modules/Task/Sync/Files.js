@@ -22,7 +22,7 @@ module.exports = {
         let maxIndex = total - 1;
         let timer = new Timer(console);
         let bar = new ProgressBar(total, console);
-        let bakDir = output.dir && output.deletes ? `${output.dir}${output.deletes}files/` : '';
+        let bakDir = output.dir && output.deletes ? `${output.dir}/${output.deletes}/files/` : '';
 
         timer.start(`开始清理文件 ${target.dir.blue}，共 ${colors.cyan(total)} 个 >>`.bold);
 
@@ -30,14 +30,18 @@ module.exports = {
         deletes.forEach((name, index) => {
             let file = `${target.dir}${name}`;
             let link = index == maxIndex ? `└──` : `├──`;
+            let act = bakDir ? '备份&删除' : '直接删除';
 
             bar.render({
                 text: '清理文件: ',
-                msg: `${link.gray}删除文件: ${name.cyan}`,
+                msg: `${link.gray}${act}文件: ${name.cyan}`,
             });
 
             //备份一下。
-            File.copy(file, `${bakDir}${name}`);
+            if (bakDir) {
+                File.copy(file, `${bakDir}${name}`);
+            }
+
             fs.unlinkSync(file);
         });
 
