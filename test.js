@@ -19,6 +19,7 @@ const { parse, sync, } = require('./index');
 sync({
     source: '/Users/micty/Pictures/Canon/test/2008-source',
     target: '/Users/micty/Pictures/Canon/test/2008-target',
+    output: './output/test/',
 });
 
 // parse('/Users/micty/Pictures/Canon/2008');
